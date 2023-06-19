@@ -12,11 +12,11 @@ namespace GymManagementSystem
             InitializeComponent();
         }
 
-        SqlConnection Con = new SqlConnection(@"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=C:\Users\enter\OneDrive\Documents\GymDb.mdf;Integrated Security=True;Connect Timeout=30");
+        SqlConnection Con = new SqlConnection(@"Data Source=DEVICE;Initial Catalog=GYM;Integrated Security=True");
         private void populate()
         {
             Con.Open();
-            string query = "select * from MemberTbl";
+            string query = "select * from tbl_user";
             SqlDataAdapter sda = new SqlDataAdapter(query, Con);
             SqlCommandBuilder builder = new SqlCommandBuilder();
             var ds = new DataSet();
@@ -24,33 +24,9 @@ namespace GymManagementSystem
             MemberSDGV.DataSource = ds.Tables[0];
             Con.Close();
         }
-        private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void bunifuMaterialTextbox1_OnValueChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void bunifuMaterialTextbox2_OnValueChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void label3_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void bunifuMaterialTextbox4_OnValueChanged(object sender, EventArgs e)
-        {
-
-        }
         private void UpdateDelete_Load(object sender, EventArgs e)
         {
-            populate();
+            this.tbl_userTableAdapter.Fill(this.gYMDataSet.tbl_user);
         }
 
         int key;
@@ -65,23 +41,33 @@ namespace GymManagementSystem
             PhoneTb.Text = selectedRow.Cells[2].Value.ToString();
             GenderCb.Text = selectedRow.Cells[3].Value.ToString();
             AgeTb.Text = selectedRow.Cells[4].Value.ToString();
-            AmountTb.Text = selectedRow.Cells[5].Value.ToString();
 
         }
 
         private void button1_Click(object sender, EventArgs e)
         {
+            // reset
             NameTb.Text = "";
             AgeTb.Text = "";
             PhoneTb.Text = "";
             GenderCb.Text = "";
-            AmountTb.Text = "";
+        }
+        private void FillByPhone()
+        {
+            Con.Open();
+            string query = "select * from tbl_user where phone='" + bunifuMaterialTextbox1.Text + "'";
+            SqlDataAdapter sda = new SqlDataAdapter(query, Con);
+            SqlCommandBuilder builder = new SqlCommandBuilder();
+            var ds = new DataSet();
+            sda.Fill(ds);
+            MemberSDGV.DataSource = ds.Tables[0];
+            Con.Close();
         }
 
         private void button4_Click(object sender, EventArgs e)
         {
-            MainForm mainform = new MainForm();
-            mainform.Show();
+            ViewMembers viewMembers = new ViewMembers();
+            viewMembers.Show();
             this.Hide();
         }
 
@@ -89,52 +75,57 @@ namespace GymManagementSystem
         {
             if (key == 0)
             {
-                MessageBox.Show("Select The Member To Be Deleted");
+                MessageBox.Show("Mã khách hàng bị trống", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
             } 
             else
             {
                 try
                 {
                     Con.Open();
-                    string query = "delete from MemberTbl where MId=" + key + ";";
+                    string query = "delete from tbl_user where id=" + key + ";";
                     SqlCommand cmd = new SqlCommand(query, Con);
                     cmd.ExecuteNonQuery();
-                    MessageBox.Show("Member Deleted Successfully");
+                    MessageBox.Show("Xóa thành công", "Thông Báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     Con.Close();
                     populate();
 
                 } catch ( Exception Ex )
                 {
-                    MessageBox.Show(Ex.Message);
+                    MessageBox.Show(Ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
         }
 
         private void button2_Click(object sender, EventArgs e)
         {
-            if (key == 0 || NameTb.Text == "" || PhoneTb.Text == "" || AgeTb.Text == "" || AmountTb.Text == "" || GenderCb.Text == "" )
+            if (key == 0 || NameTb.Text == "" || PhoneTb.Text == "" || AgeTb.Text == "" || GenderCb.Text == "" )
             {
-                MessageBox.Show("Missing Information");
+                MessageBox.Show("Thông tin bị trống", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             else
             {
                 try
                 {
                     Con.Open();
-                    string query = $"update MemberTbl set MName='{NameTb.Text}', MPhone='{PhoneTb.Text}', MGen='{GenderCb.Text}', MAge={AgeTb.Text}, MAmount={AmountTb.Text} where MId={key};";
+                    string query = $"update tbl_user set name=N'{NameTb.Text}', phone='{PhoneTb.Text}', gender=N'{GenderCb.Text}', age={AgeTb.Text} where id={key};";
 
                     SqlCommand cmd = new SqlCommand(query, Con);
                     cmd.ExecuteNonQuery();
-                    MessageBox.Show("Member Updated Successfully");
+                    MessageBox.Show("Cập nhật thành công", "Thông Báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     Con.Close();
                     populate();
 
                 }
                 catch (Exception Ex)
                 {
-                    MessageBox.Show(Ex.Message);
+                    MessageBox.Show(Ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
+        }
+
+        private void button5_Click(object sender, EventArgs e)
+        {
+            FillByPhone();
         }
     }
 }

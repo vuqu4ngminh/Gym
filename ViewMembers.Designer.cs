@@ -241,7 +241,7 @@
             this.Controls.Add(this.label1);
             this.Margin = new System.Windows.Forms.Padding(2);
             this.Name = "ViewMembers";
-            this.Text = "ViewMembers";
+            this.Text = "KIhách Hàng";
             this.Load += new System.EventHandler(this.ViewMembers_Load);
             ((System.ComponentModel.ISupportInitialize)(this.MemberSDGV)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.tbluserBindingSource)).EndInit();

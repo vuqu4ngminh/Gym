@@ -146,15 +146,15 @@
             // 
             // GenderCb
             // 
-            this.GenderCb.Font = new System.Drawing.Font("Century", 13.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.GenderCb.Font = new System.Drawing.Font("Verdana", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.GenderCb.FormattingEnabled = true;
             this.GenderCb.Items.AddRange(new object[] {
-            "Male",
-            "Female"});
+            "Nam",
+            "Nữ"});
             this.GenderCb.Location = new System.Drawing.Point(274, 398);
             this.GenderCb.Margin = new System.Windows.Forms.Padding(2);
             this.GenderCb.Name = "GenderCb";
-            this.GenderCb.Size = new System.Drawing.Size(222, 30);
+            this.GenderCb.Size = new System.Drawing.Size(222, 31);
             this.GenderCb.TabIndex = 9;
             // 
             // label6

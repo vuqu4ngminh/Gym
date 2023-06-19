@@ -8,6 +8,40 @@ using System.IO;
 
 namespace GymManagementSystem
 {
+    public class AdminInfo
+    {
+        public string name { get; set; }
+        public int id { get; set; }
+    }
+
+    public class AdminFileManager
+    {
+        public void SaveAdminInfo(string fileName, AdminInfo adminInfo)
+        {
+            using (StreamWriter writer = new StreamWriter(fileName))
+            {
+                writer.WriteLine(adminInfo.name);
+                writer.WriteLine(adminInfo.id);
+            }
+        }
+
+        public AdminInfo LoadAdminInfo(string fileName)
+        {
+            AdminInfo adminInfo = new AdminInfo();
+
+            if (File.Exists(fileName))
+            {
+                using (StreamReader reader = new StreamReader(fileName))
+                {
+                    adminInfo.name = reader.ReadLine();
+                    int.TryParse(reader.ReadLine(), out int id);
+                    adminInfo.id = id;
+                }
+            }
+
+            return adminInfo;
+        }
+    }
     public class MD5Hashing
     {
         public static string GetMD5Hash(string input)
@@ -33,7 +67,6 @@ namespace GymManagementSystem
         {
             InitializeComponent();
         }
-        private string name;
         SqlConnection Con = new SqlConnection(@"Data Source=DEVICE;Initial Catalog=GYM;Integrated Security=True");
         private bool checkAdmin(string _username, string _password)
         {
@@ -51,12 +84,19 @@ namespace GymManagementSystem
                 string password = (string)row["password"];
                 if (_username == username && _password == password)
                 {
-                    name = (string)row["name"];
+                    AdminInfo adminInfo = new AdminInfo()
+                    {
+                        name = (string)row["name"],
+                        id = (int)row["id"]
+                    };
+                    AdminFileManager adminFileManager = new AdminFileManager();
+                    adminFileManager.SaveAdminInfo("admin.txt", adminInfo);
                     Con.Close();
                     return true;
                 }
 
             }
+            Con.Close();
             return false;
 
         }
@@ -71,7 +111,6 @@ namespace GymManagementSystem
             }
             else if (checkAdmin(UidTb.Text, currentPwd))
             {
-                File.WriteAllText("admin.txt", name);
                 MainForm mainform = new MainForm();
                 mainform.Show();
                 this.Hide();

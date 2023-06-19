@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Windows.Forms;
-using System.IO;
 
 namespace GymManagementSystem
 {
@@ -10,7 +9,6 @@ namespace GymManagementSystem
         {
             InitializeComponent();
         }
-        public string adminName;
 
         private void bunifuThinButton24_Click(object sender, EventArgs e)
         {
@@ -20,6 +18,7 @@ namespace GymManagementSystem
         }
         private void bunifuThinButton23_Click_1(object sender, EventArgs e)
         {
+            // khách hàng
             ViewMembers viewMembers = new ViewMembers();
             viewMembers.Show();
             this.Hide();
@@ -27,13 +26,33 @@ namespace GymManagementSystem
 
         private void MainForm_Load(object sender, EventArgs e)
         {
-            string filePath = "admin.txt";
-            if (File.Exists(filePath))
-            {
-                adminName = File.ReadAllText(filePath);
-                label1.Text = "Xin chào " + adminName;
-            }
-            
+            // hiện tên
+            AdminFileManager adminFileManager = new AdminFileManager();
+            AdminInfo loadedAdminInfo = adminFileManager.LoadAdminInfo("admin.txt");
+            label1.Text = "Xin chào " + loadedAdminInfo.name;
+
+        }
+
+        private void bunifuThinButton21_Click(object sender, EventArgs e)
+        {
+            // admin
+            Admin admin = new Admin();
+            admin.Show();
+            this.Hide();
+        }
+
+        private void bunifuThinButton22_Click(object sender, EventArgs e)
+        {
+            // dịch vụ
+            Service service = new Service();
+            service.Show();
+            this.Hide();
+        }
+
+        private void bunifuThinButton25_Click(object sender, EventArgs e)
+        {
+            // thoát
+            Application.Exit();
         }
     }
 }

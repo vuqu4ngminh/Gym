@@ -8,6 +8,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Data.SqlClient;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
+using Bunifu.Framework.UI;
 
 namespace GymManagementSystem
 {
@@ -17,80 +19,109 @@ namespace GymManagementSystem
         {
             InitializeComponent();
         }
-
-        SqlConnection Con = new SqlConnection(@"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=C:\Users\ADMIN\OneDrive\Documents\GymDb.mdf;Integrated Security=True;Connect Timeout=30");
-
-        private void FillName()
+        private int price;
+        public string GenerateRandomString()
         {
-            Con.Open();
-            SqlCommand cmd = new SqlCommand("select MName from MemberTbl", Con);
-            SqlDataReader rdr = cmd.ExecuteReader();
-            DataTable dt = new DataTable();
-            dt.Columns.Add("MName", typeof(string));
-            dt.Load(rdr);
-            NameCb.ValueMember = "MName";
-            NameCb.DataSource = dt;
-            Con.Close();
+            string characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+            Random random = new Random();
+            StringBuilder sb = new StringBuilder();
+
+            for (int i = 0; i < 10; i++)
+            {
+                int index = random.Next(0, characters.Length);
+                sb.Append(characters[index]);
+            }
+
+            return sb.ToString();
         }
+
+        SqlConnection Con = new SqlConnection(@"Data Source=DEVICE;Initial Catalog=GYM;Integrated Security=True");
+
         private void populate()
         {
             Con.Open();
-            string query = "select * from PaymentTbl";
+            string query = "select * from tbl_payment";
             SqlDataAdapter sda = new SqlDataAdapter(query, Con);
-            SqlCommandBuilder builder = new SqlCommandBuilder();
             var ds = new DataSet();
             sda.Fill(ds);
             PaymentDGV.DataSource = ds.Tables[0];
             Con.Close();
         }
 
-        private void button3_Click(object sender, EventArgs e)
-        {
-            MainForm mainform = new MainForm();
-            mainform.Show();
-            this.Hide();
-        }
-
         private void Payment_Load(object sender, EventArgs e)
         {
-            FillName();
             populate();
         }
 
         private void button1_Click(object sender, EventArgs e)
         {
-            //NameTb.Text = "";
-            AmountTb.Text = "";
+            // đặt lại
+            textBox1.Text = "";
+            comboBox1.Text = "";
         }
-
+        private void savePaymentId(string paymentId,int userId)
+        {
+            Con.Open();
+            string update = $"UPDATE tbl_user SET payment = '{paymentId}' WHERE id = {userId}";
+            SqlCommand cmd = new SqlCommand(update, Con);
+            cmd.ExecuteNonQuery();
+            Con.Close();
+        }
+        private void insertPayment(string paymentId,int month,string offer)
+        {
+            Con.Open();
+            string query = $"SELECT * FROM tbl_offer WHERE id = {month}";
+            SqlDataAdapter adapter = new SqlDataAdapter(query, Con);
+            DataTable table = new DataTable();
+            adapter.Fill(table);
+            foreach (DataRow row in table.Rows)
+            {
+                price = (int)row["price"];
+            }
+            string insert = $"INSERT INTO tbl_payment (id,price,offer,startAt,endAt) VALUES ('{paymentId}','{price}',N'{offer}',CONVERT(DATE, GETDATE()),CONVERT(DATE, DATEADD(MONTH, {month}, GETDATE())))";
+            SqlCommand cmd = new SqlCommand(insert, Con);
+            cmd.ExecuteNonQuery();
+            MessageBox.Show("Thành công", "Thông Báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            Con.Close();
+            savePaymentId(paymentId, int.Parse(textBox1.Text));
+        }
 
         private void button2_Click(object sender, EventArgs e)
         {
-            if (NameCb.Text == "" || AmountTb.Text == "")
+            if (textBox1.Text == "" || comboBox1.Text == "")
             {
-                MessageBox.Show("Missing Information");
+                MessageBox.Show("Thông tin bị trống", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             else
             {
-                string payperiode = Periode.Value.Month.ToString() + Periode.Value.Year.ToString();
-                Con.Open();
-                SqlDataAdapter sda = new SqlDataAdapter("select count(*) from PaymentTbl where PMember='"+NameCb.SelectedValue.ToString()+"' and PMonth='" +payperiode+"'", Con);
-                DataTable dt = new DataTable();
-                sda.Fill(dt);
-                if (dt.Rows[0][0].ToString() == "1")
+                // id
+                string id = GenerateRandomString();
+                
+                switch (comboBox1.Text)
                 {
-                    MessageBox.Show("Already Paid For This Month");
+                    case "1 tháng":
+                        insertPayment(id, 1, comboBox1.Text);
+                        break;
+                    case "3 tháng":
+                        insertPayment(id, 3, comboBox1.Text);
+                        break;
+                    case "6 tháng":
+                        insertPayment(id, 6, comboBox1.Text);
+                        break;
+                    case "12 tháng":
+                        insertPayment(id, 12, comboBox1.Text);
+                        break;
                 }
-                else
-                {
-                    string query = "insert into PaymentTbl values('"+payperiode+"','"+NameCb.SelectedValue.ToString()+"',"+AmountTb.Text+")";
-                    SqlCommand cmd = new SqlCommand(query, Con);
-                    cmd.ExecuteNonQuery();
-                    MessageBox.Show("Amount Paid Successfully");
-                }
-                Con.Close();
                 populate();
             }
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            // quay lại
+            MainForm mainform = new MainForm();
+            mainform.Show();
+            this.Hide();
         }
     }
 }

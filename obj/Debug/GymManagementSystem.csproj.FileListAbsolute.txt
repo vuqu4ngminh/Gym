@@ -32,4 +32,6 @@ C:\Users\enter\OneDrive\Desktop\Gym\obj\Debug\GymManagementSystem.csproj.CoreCom
 C:\Users\enter\OneDrive\Desktop\Gym\obj\Debug\GymManagementSystem.csproj.CopyComplete
 C:\Users\enter\OneDrive\Desktop\Gym\obj\Debug\GymManagementSystem.exe
 C:\Users\enter\OneDrive\Desktop\Gym\obj\Debug\GymManagementSystem.pdb
-C:\Users\enter\OneDrive\Desktop\Gym\obj\Debug\GymManagementSystem.MD5Hashing.resources
+C:\Users\enter\OneDrive\Desktop\Gym\obj\Debug\GymManagementSystem.Admin.resources
+C:\Users\enter\OneDrive\Desktop\Gym\obj\Debug\GymManagementSystem.AdminInfo.resources
+C:\Users\enter\OneDrive\Desktop\Gym\obj\Debug\GymManagementSystem.Service.resources
